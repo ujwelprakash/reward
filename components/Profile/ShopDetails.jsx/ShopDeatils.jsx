@@ -59,7 +59,8 @@ const ShopDetails = () => {
   };
 
   return (
-    <div className="space-y-6 text-sm max-w-sm mx-auto pb-32">
+    <div className="space-y-6 text-sm max-w-2xl mx-auto px-4 pb-32">
+      {/* Title */}
       <div>
         <h2 className="text-lg font-semibold">Shop Details</h2>
         <p className="text-gray-500">
@@ -67,6 +68,7 @@ const ShopDetails = () => {
         </p>
       </div>
 
+      {/* Inputs */}
       <input
         type="text"
         placeholder="Shop Name"
@@ -77,7 +79,7 @@ const ShopDetails = () => {
 
       <textarea
         placeholder="Shop Address"
-        className="w-full border rounded px-4 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+        className="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
         value={shopAddress}
         onChange={(e) => setShopAddress(e.target.value)}
         rows={2}
@@ -91,6 +93,7 @@ const ShopDetails = () => {
         onChange={(e) => setContactNumber(e.target.value)}
       />
 
+      {/* Map Button */}
       <button
         onClick={handleMapClick}
         className="flex items-center justify-between gap-2 border rounded px-4 py-2 w-full text-gray-700 hover:bg-gray-100 transition"
@@ -111,41 +114,35 @@ const ShopDetails = () => {
           </button>
         </div>
 
-        <div className="flex justify-between gap-6">
-          {/* Left side: Monday to Thursday */}
-          <div className="flex flex-col gap-3 w-1/2">
-            {daysOfWeek
-              .filter((day) =>
-                ["Monday", "Tuesday", "Wednesday", "Thursday"].includes(day)
-              )
-              .map((day) => (
-                <label key={day} className="flex items-center gap-4">
-                  <input
-                    type="checkbox"
-                    checked={workingDays.includes(day)}
-                    onChange={() => toggleDay(day)}
-                    className="accent-green-500"
-                  />
-                  <span>{day}</span>
-                </label>
-              ))}
+        <div className="flex flex-wrap md:flex-nowrap justify-between gap-6">
+          {/* Left */}
+          <div className="flex flex-col gap-3 w-full md:w-1/2">
+            {["Monday", "Tuesday", "Wednesday", "Thursday"].map((day) => (
+              <label key={day} className="flex items-center gap-4">
+                <input
+                  type="checkbox"
+                  checked={workingDays.includes(day)}
+                  onChange={() => toggleDay(day)}
+                  className="accent-green-500"
+                />
+                <span>{day}</span>
+              </label>
+            ))}
           </div>
 
-          {/* Right side: Friday to Sunday */}
-          <div className="flex flex-col gap-2 w-1/2 ">
-            {daysOfWeek
-              .filter((day) => ["Friday", "Saturday", "Sunday"].includes(day))
-              .map((day) => (
-                <label key={day} className="flex items-center gap-4">
-                  <input
-                    type="checkbox"
-                    checked={workingDays.includes(day)}
-                    onChange={() => toggleDay(day)}
-                    className="accent-green-500"
-                  />
-                  <span>{day}</span>
-                </label>
-              ))}
+          {/* Right */}
+          <div className="flex flex-col gap-3 w-full md:w-1/2">
+            {["Friday", "Saturday", "Sunday"].map((day) => (
+              <label key={day} className="flex items-center gap-4">
+                <input
+                  type="checkbox"
+                  checked={workingDays.includes(day)}
+                  onChange={() => toggleDay(day)}
+                  className="accent-green-500"
+                />
+                <span>{day}</span>
+              </label>
+            ))}
           </div>
         </div>
       </div>
@@ -153,30 +150,23 @@ const ShopDetails = () => {
       {/* Working Time */}
       <div className="border rounded-lg p-4">
         <h3 className="font-medium mb-3">Working Time</h3>
-        <h4 className="font-normal text-gray-700 mb-3">
-          Select the Opening & Closing Time
-        </h4>
-        <div className="flex gap-4">
-          {/* Open Time */}
-          <div className="relative w-[122px] h-[40px]">
-          
+        <p className="text-gray-700 mb-3">Select the Opening & Closing Time</p>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="w-full sm:w-[50%]">
             <input
               type="time"
               value={openTime}
               onChange={(e) => setOpenTime(e.target.value)}
-              className="w-full h-full p-2 pl-5 border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+              className="w-full p-2 border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-blue-400"
               step="900"
             />
           </div>
-
-          {/* Close Time */}
-          <div className="relative w-[122px] h-[40px]">
-        
+          <div className="w-full sm:w-[50%]">
             <input
               type="time"
               value={closeTime}
               onChange={(e) => setCloseTime(e.target.value)}
-              className="w-full h-full p-2 pl-5 border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+              className="w-full p-2 border rounded-[16px] focus:outline-none focus:ring-2 focus:ring-blue-400"
               step="900"
             />
           </div>
@@ -184,36 +174,21 @@ const ShopDetails = () => {
       </div>
 
       {/* Store Image */}
-      <div className="border rounded-lg p-4 space-y-3 ">
-        <h3 className="font-[500] text-[18px] leading-[100%] tracking-[0px] font-inter">
-          Edit Store Image
-        </h3>
-        <p className="font-inter font-[400] text-[12px] leading-[100%] tracking-[0px] text-gray-500">
-          You can edit the Store Image
-        </p>
+      <div className="border rounded-lg p-4 space-y-3">
+        <h3 className="font-semibold text-lg">Edit Store Image</h3>
+        <p className="text-gray-500 text-sm">You can edit the Store Image</p>
 
-        <div className="flex items-start gap-4">
-          {/* Image */}
+        <div className="flex flex-col sm:flex-row items-start gap-4">
           <div>
-            {storeImage ? (
-              <img
-                src={storeImage}
-                alt="Store"
-                className="w-32 h-32 object-cover rounded shadow"
-              />
-            ) : (
-              <img
-                src={resimg}
-                alt="Default Store"
-                className="w-32 h-32 object-cover rounded shadow"
-              />
-            )}
+            <img
+              src={storeImage || resimg}
+              alt="Store"
+              className="w-32 h-32 object-cover rounded shadow"
+            />
           </div>
-
-          {/* Buttons */}
-          <div className="flex flex-col justify-center pt-3 space-y- text-sm text-gray-500">
-            <label className="flex items-center pl-9 gap-1 cursor-pointer text-gray-600">
-              Change Image
+          <div className="flex flex-col justify-center space-y-1 text-sm text-gray-500">
+            <label className="cursor-pointer text-gray-600">
+              <span className="underline">Change Image</span>
               <input
                 type="file"
                 accept="image/*"
@@ -221,10 +196,10 @@ const ShopDetails = () => {
                 className="hidden"
               />
             </label>
-            <p className="text-gray-600 pl-18 pt-2">or</p>
+            <p className="text-gray-600 text-xs">or</p>
             <button
               onClick={handleRemoveImage}
-              className="flex items-center pl-9 pt-2  gap-1 text-gray-600"
+              className="text-red-500 text-sm underline"
             >
               Remove Image
             </button>

@@ -16,63 +16,74 @@ const ProfileDetails = () => {
 
   const handleEditClick = () => {
     setIsEditing(true);
-    setShowNote(false); // Hide note while editing
+    setShowNote(false);
   };
 
   const handleSave = () => {
     setIsEditing(false);
-    setShowNote(true); // Show note after saving
-    // Add your save logic here (e.g., API call)
+    setShowNote(true);
+    // Add your save logic here
   };
 
   return (
-    <div className="w-115 max-w-lg bg-white p-6 rounded-md border border-gray-200 shadow-sm">
-      <h3 className="text-lg font-semibold mb-1">Profile Details</h3>
+    <div className="w-full max-w-xl mx-auto bg-white p-5 sm:p-6 rounded-md border border-gray-200 shadow-sm">
+      <h3 className="text-lg sm:text-xl font-semibold mb-1">Profile Details</h3>
       <p className="text-sm text-gray-500 mb-4">
         Here you can view and edit your details.
       </p>
 
-      <div className="space-y-9">
-        <input
-          type="text"
-          value={formData.name}
-          readOnly={!isEditing}
-          onChange={handleChange("name")}
-          className="w-100 border rounded px-2 py-2 text-sm"
-        />
+      <div className="space-y-6">
+        {/* Name */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Name</label>
+          <input
+            type="text"
+            value={formData.name}
+            readOnly={!isEditing}
+            onChange={handleChange("name")}
+            className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-        <input
-          type="text"
-          value={formData.phone}
-          readOnly={!isEditing}
-          onChange={handleChange("phone")}
-          className="w-100 border rounded px-2 py-2 text-sm"
-        />
+        {/* Phone */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Phone</label>
+          <input
+            type="text"
+            value={formData.phone}
+            readOnly={!isEditing}
+            onChange={handleChange("phone")}
+            className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
+        {/* Email */}
         <div className="relative">
+          <label className="block text-sm font-medium mb-1">Email</label>
           <input
             type="email"
             value={formData.email}
             readOnly={!isEditing}
             onChange={handleChange("email")}
-            className="w-100 border rounded px-2 py-2 text-sm pr-20"
+            className="w-full border rounded px-3 py-2 text-sm pr-20 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {!isEditing && (
             <button
               onClick={handleEditClick}
-              className="absolute top-2.5 right-10 text-red-500 text-sm font-medium"
+              className="absolute top-8 right-3 text-blue-600 text-sm font-medium hover:underline"
             >
               Change
             </button>
           )}
         </div>
 
+        {/* Save Button */}
         <button
           disabled={!isEditing}
           onClick={handleSave}
-          className={`w-100 py-2 rounded text-sm ${
+          className={`w-full py-2 rounded text-sm font-medium transition ${
             isEditing
-              ? "bg-green-500 text-white cursor-pointer"
+              ? "bg-green-500 text-white hover:bg-green-600"
               : "bg-gray-200 text-gray-500 cursor-not-allowed"
           }`}
         >

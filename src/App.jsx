@@ -6,6 +6,7 @@ import Profile from "../components/Profile/Profile";
 import Order from "../components/Order/Order";
 import Addproduct from "../components/Product/AddProduct/Addproduct";
 import EditProduct from "../components/Product/Edit/EditProduct";
+
 // import other pages...
 
 function App() {
@@ -17,6 +18,8 @@ function App() {
       <Route path="/Editproduct" element={<EditProduct />} />
       <Route path="/Product" element={<Product />} />
       <Route path="/Order" element={<Order />} />
+/
+
       {/* Add more routes here */}
 
       <Route path="*" element={<div>Page not found</div>} />

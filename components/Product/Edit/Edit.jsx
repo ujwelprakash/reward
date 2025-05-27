@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import doveimg from "../../../src/assets/doveimg.png"
+
 const Edit = () => {
   const initialData = {
     category: "Pharmacy",
@@ -11,7 +13,8 @@ const Edit = () => {
     uom: "ml",
     unitSize: "250",
     availableQty: "200",
-    description: "",
+    description:
+      "Lorem ipsum dolor sit amet consectetur. Viverra odio gravida praesent bibendum urna diam. Vestibulum feugiat id varius egestas malesuada tempor lobortis donec vitae eleifend sit adipiscing mattis non duis. Nunc id volutpat sapien ut massa lorem volutpat sapien ut massa lorem volutpat sapien ut massa.",
     country: "India",
     manufacturer: "DOVE PVT LTD",
     delivery: {
@@ -23,20 +26,11 @@ const Edit = () => {
 
   const [formData, setFormData] = useState(initialData);
   const [isChanged, setIsChanged] = useState(false);
-   const navigate = useNavigate(); // ✅ proper use
-  
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setIsChanged(true);
-  };
-
-  const handleCheckbox = (key) => {
-    setFormData((prev) => ({
-      ...prev,
-      delivery: { ...prev.delivery, [key]: !prev.delivery[key] },
-    }));
     setIsChanged(true);
   };
 
@@ -54,151 +48,172 @@ const Edit = () => {
       <div className="border border-gray-400 rounded-md p-4 space-y-4">
         <h3 className="text-lg font-medium">Product Details</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="border border-gray-400 p-2 rounded w-full"
-          >
-            <option value="">Select Category</option>
-         
-          </select>
-
-          <input
-            name="productName"
-            value={formData.productName}
-            onChange={handleChange}
-            className="border border-gray-400 p-2 rounded w-full"
-            placeholder="Product Name"
-          />
-
-          <input
-            name="productMRP"
-            value={formData.productMRP}
-            onChange={handleChange}
-            className="border border-gray-400 p-2 rounded w-full"
-            placeholder="Product MRP"
-          />
-
-          <div className="flex gap-2">
-            <select
-              name="discountType"
-              value={formData.discountType}
-              onChange={handleChange}
-              className="border border-gray-400 p-2 rounded w-1/2"
-            >
-              <option value="Flat">Flat</option>
-              <option value="Percent">Percent</option>
-            </select>
+          {/* Category */}
+          <div>
+            <label className=" text-xs block mb-1">Category</label>
             <input
-              name="discountValue"
-              value={formData.discountValue}
-              onChange={handleChange}
-              className="border border-gray-400 p-2 rounded w-1/2"
-              placeholder="Discount Value"
+              disabled
+              value={formData.category}
+              className="border border-gray-400 p-2 rounded w-full bg-gray-100"
             />
           </div>
 
-          <input
-            name="productPrice"
-            value={formData.productPrice}
-            onChange={handleChange}
-            className="border border-gray-400 p-2 rounded w-full"
-            placeholder="Product Price"
-          />
+          {/* Product Name */}
+          <div>
+            <label className=" text-xs block mb-1">Product Name</label>
+            <input
+              disabled
+              value={formData.productName}
+              className="border border-gray-400 p-2 rounded w-full bg-gray-100"
+            />
+          </div>
 
-          <select
-            name="uom"
-            value={formData.uom}
-            onChange={handleChange}
-            className="border border-gray-400 p-2 rounded w-full"
-          >
-            <option value="ml">ml</option>
-            <option value="g">g</option>
-          </select>
+          {/* Product MRP */}
+          <div>
+            <label className=" text-xs block mb-1">Product MRP</label>
+            <input
+              name="productMRP"
+              value={formData.productMRP}
+              onChange={handleChange}
+              className="border border-gray-400 p-2 rounded w-full"
+            />
+          </div>
 
-          <input
-            name="unitSize"
-            value={formData.unitSize}
-            onChange={handleChange}
-            className="border border-gray-400 p-2 rounded w-full"
-            placeholder="Unit Size"
-          />
+          {/* Discount */}
+          <div>
+            <label className=" text-xs block mb-1">Special Discount</label>
+            <div className="flex gap-2">
+              <select
+                name="discountType"
+                value={formData.discountType}
+                onChange={handleChange}
+                className="border border-gray-400 p-2 rounded w-1/2"
+              >
+                <option value="Flat">Flat</option>
+                <option value="Percent">Percent</option>
+              </select>
+              <input
+                name="discountValue"
+                value={formData.discountValue}
+                onChange={handleChange}
+                className="border border-gray-400 p-2 rounded w-1/2"
+              />
+            </div>
+          </div>
 
-          <input
-            name="availableQty"
-            value={formData.availableQty}
-            onChange={handleChange}
-            className="border border-gray-400 p-2 rounded w-full"
-            placeholder="Available Quantity"
-          />
+          {/* Product Price */}
+          <div>
+            <label className=" text-xs block mb-1">Product Price</label>
+            <input
+              name="productPrice"
+              value={formData.productPrice}
+              onChange={handleChange}
+              className="border border-gray-400 p-2 rounded w-full"
+            />
+          </div>
+
+          {/* UOM */}
+          <div>
+            <label className=" text-xs block mb-1">UOM</label>
+            <input
+              disabled
+              value={formData.uom}
+              className="border border-gray-400 p-2 rounded w-full bg-gray-100"
+            />
+          </div>
+
+          {/* Unit Size */}
+          <div>
+            <label className=" text-xs block mb-1">Unit Size</label>
+            <input
+              disabled
+              value={formData.unitSize}
+              className="border border-gray-400 p-2 rounded w-full bg-gray-100"
+            />
+          </div>
+
+          {/* Available Quantity */}
+          <div>
+            <label className=" text-xs block mb-1">Available Quantity</label>
+            <input
+              disabled
+              value={formData.availableQty}
+              className="border border-gray-400 p-2 rounded w-full bg-gray-100"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Product Info */}
+      {/* Product Information */}
       <div className="border border-gray-400 rounded-md p-4 space-y-4">
         <h3 className="text-lg font-medium">Product Information</h3>
+        <label className=" text-xs block mb-1">Description</label>
         <textarea
-          name="description"
+          disabled
           value={formData.description}
-          onChange={handleChange}
-          className="border border-gray-400 p-2 rounded w-full"
+          className="border border-gray-400 p-2 pb-5 rounded w-full bg-gray-100 overflow-auto resize-none"
           rows="4"
-          placeholder="Description"
+          placeholder="Lorem ipsum dolor sit amet consectetur. Viverra duis gravida praesent bibendum urna diam velit. Interdum feugiat id montes lectus ultrices neque ipsum felis. Donec diam eleifend sit adipiscing rhoncus elit lacus. Erat ut orci quisque at massa ipsum facilisis.
+Pharetra sollicitudin sollicitudin semper donec natoque commodo eu ultricies. At sit netus mattis pharetra urna sit. Urna turpis suspendisse pellentesque nisi at non sollicitudin suspendisse quam. Amet facilisis enim nibh convallis. Egestas enim est ut magna elementum facilisis.
+Tellus felis ultrices pellentesque cras nec ipsum duis velit ac. Donec tortor in id lectus non nunc dui. Ullamcorper mattis."
         />
+
         <div className="grid grid-cols-2 gap-4">
-          <input
-            value={formData.country}
-            disabled
-            className="border border-gray-400 p-2 rounded bg-gray-100 w-full"
-            placeholder="Country of Origin"
-          />
-          <input
-            value={formData.manufacturer}
-            disabled
-            className="border border-gray-400 p-2 rounded bg-gray-100 w-full"
-            placeholder="Manufacturer"
-          />
+          <div>
+            <label className=" text-xs block mb-1">Country of Origin</label>
+            <input
+              disabled
+              value={formData.country}
+              className="border border-gray-400 p-2 rounded bg-gray-100 w-full"
+              placeholder="Country of Origin"
+            />
+          </div>
+          <div>
+            <label className=" text-xs block mb-1">Manufacturer</label>
+            <input
+              disabled
+              value={formData.manufacturer}
+              className="border border-gray-400 p-2 rounded bg-gray-100 w-full"
+              placeholder="Manufacturer"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Delivery & Image */}
+      {/* Delivery & Product Image */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Delivery */}
         <div className="border border-gray-400 rounded-md p-4">
           <h3 className="text-lg font-medium">Delivery Details</h3>
           <p className="text-xs text-gray-500 mb-2">
-            (You can select multiple options)
+            Delivery Type (Read-only)
           </p>
-          <div className="space-y-2">
-            {[
-              { key: "instant", label: "Instant delivery" },
-              { key: "schedule", label: "Schedule delivery" },
-              { key: "pickup", label: "Store Pickup" },
-            ].map(({ key, label }) => (
-              <label key={key} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.delivery[key]}
-                  onChange={() => handleCheckbox(key)}
-                />
-                <span>{label}</span>
-              </label>
-            ))}
-          </div>
+          {["instant", "schedule", "pickup"].map((key) => (
+            <label key={key} className="flex items-center gap-2 mb-1">
+              <input
+                type="checkbox"
+                checked={formData.delivery[key]}
+                readOnly
+                disabled
+              />
+              <span className="capitalize text-sm">{key} delivery</span>
+            </label>
+          ))}
         </div>
 
+        {/* Product Image */}
         <div className="border border-gray-400 rounded-md p-4 flex flex-col items-center justify-center">
           <h3 className="text-lg font-medium mb-2">Product Image</h3>
-          <div className="w-32 h-32 border-2 border-dashed rounded-md flex items-center justify-center">
+          <p className="text-xs mt-2 text-left text-gray-500">
+            Product images will be fetched from <br/>the Rewardify server
+          </p>
+          <div className="w-32 h-32   rounded-md flex items-center justify-center">
             <img
-              src="https://via.placeholder.com/100x100.png?text=Dove"
-              alt="product"
+              src={doveimg} // Replace with actual path in your project
+              alt="Dove"
               className="object-contain"
             />
           </div>
-          <p className="text-xs mt-2 text-center text-gray-500">
-            Product images will be fetched from the Rewardify server
-          </p>
         </div>
       </div>
 

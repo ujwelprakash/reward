@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User, Store, Wallet, Info, LogOut } from "lucide-react"; // Lucide icons
+import { User, Store, Wallet, Info, LogOut, Menu } from "lucide-react";
 import ProfileDetails from "../ProfileDetails.jsx/ProfileDetails";
 import ShopDetails from "../ShopDetails.jsx/ShopDeatils";
 import MyWallet from "../MyWallet/MyWallet";
@@ -15,6 +15,7 @@ const tabs = [
 
 const ProfileLayout = ({ onLogoutClick }) => {
   const [activeTab, setActiveTab] = useState("profile");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -32,21 +33,37 @@ const ProfileLayout = ({ onLogoutClick }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-white font-sans">
-      <aside className="w-64 border-grey-100 px-6 pt-10">
-        <h2 className="text-xl font-semibold mb-8">My Profile</h2>
+    <div className="flex flex-col md:flex-row min-h-screen bg-white font-sans">
+      {/* Mobile menu toggle */}
+      <div className="flex justify-between items-center p-4 md:hidden border-b">
+        <h2 className="text-xl font-semibold">My Profile</h2>
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          <Menu size={24} />
+        </button>
+      </div>
+
+      {/* Sidebar */}
+      <aside
+        className={`${
+          isSidebarOpen ? "block" : "hidden"
+        } md:block md:w-64 bg-white px-6 pt-6 md:pt-10  transition-all duration-300`}
+      >
         <ul className="space-y-4">
           {tabs.map((tab) => (
             <li
               key={tab.key}
               onClick={() => {
-                if (tab.key === "logout") onLogoutClick?.();
-                else setActiveTab(tab.key);
+                if (tab.key === "logout") {
+                  onLogoutClick?.();
+                } else {
+                  setActiveTab(tab.key);
+                }
+                setIsSidebarOpen(false); // Close on mobile
               }}
               className={`flex items-center space-x-3 px-4 py-2 rounded-full cursor-pointer transition ${
                 activeTab === tab.key
-                  ? "bg-green-00 text-black-600 font-medium"
-                  : "text-gray-600 "
+                  ? "bg-green-100 text-green-700 font-semibold"
+                  : "text-gray-600 hover:bg-gray-100"
               }`}
             >
               <span>{tab.icon}</span>
@@ -56,8 +73,9 @@ const ProfileLayout = ({ onLogoutClick }) => {
         </ul>
       </aside>
 
-      <main className="flex-1 flex justify-center items-start pt-12 overflow-y-auto max-h-screen">
-        <div className="w-full max-w-xl bg-white rounded-xl shadow-sm p-8">
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto px-4 md:px-0 pt-4 md:pt-12 flex justify-center">
+        <div className="w-full max-w-xl bg-white rounded-xl shadow-sm p-6 md:p-8">
           {renderContent()}
         </div>
       </main>
@@ -66,4 +84,3 @@ const ProfileLayout = ({ onLogoutClick }) => {
 };
 
 export default ProfileLayout;
-  

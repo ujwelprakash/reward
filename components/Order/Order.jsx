@@ -6,18 +6,32 @@ import OrdersPage from "./Index/Index";
 
 const Order = () => {
   return (
-    <div>
-      <div className="relative w-full h-screen bg-[#F9F9F9] overflow-hidden">
-        <Header />
-        <div className="flex w-full h-full">
-          <div className="hidden md:block w-[240px] bg-white border-r h-full">
+    <div className="w-full min-h-screen bg-[#F9F9F9] flex justify-center">
+      {/* App layout constrained to 1440px */}
+      <div className="w-full max-w-[1440px] bg-white min-h-screen flex flex-col">
+        {/* Header */}
+        <div className="w-full">
+          <Header />
+        </div>
+
+        {/* Main Section */}
+        <div className="flex flex-1 flex-col md:flex-row">
+          {/* Sidebar for Desktop */}
+          <div className="hidden md:block w-[240px] ">
             <Navbar />
           </div>
-          <div className="block md:hidden w-full">
-            <Navbar />
-          </div>
-          <div className="flex-1 p-6 relative z-0  overflow-y-auto">
-        <OrdersPage/>
+
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col">
+            {/* Mobile Navbar */}
+            <div className="block md:hidden ">
+              <Navbar />
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6">
+              <OrdersPage />
+            </div>
           </div>
         </div>
       </div>

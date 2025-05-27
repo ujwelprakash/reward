@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Addproductdetails = () => {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     category: "",
     productName: "",
@@ -30,21 +33,94 @@ const Addproductdetails = () => {
     setForm({ ...form, deliveryTypes: updated });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setForm({ ...form, image: reader.result });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      alert("Please select a valid image file.");
+    }
+  };
+
   const isFormValid = () => {
     return (
-      form.category &&
-      form.productName &&
-      form.price &&
-      form.quantity &&
-      form.uom
+      form.category.trim() &&
+      form.productName.trim() &&
+      !isNaN(parseFloat(form.price)) &&
+      !isNaN(parseInt(form.quantity)) &&
+      form.uom.trim()
     );
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isFormValid()) return;
-    console.log("Submitted form:", form);
-    // Handle form submission logic
+    console.log("Submitting product:", form); // Debug log
+
+    if (!isFormValid()) {
+      alert("Please fill all required fields correctly.");
+      return;
+    }
+
+    const storedData = sessionStorage.getItem("productData");
+    const productData = storedData ? JSON.parse(storedData) : [];
+
+    const newProduct = {
+      id: Date.now(),
+      name: form.productName,
+      mrp: form.mrp ? parseFloat(form.mrp) : 0,
+      discountType: form.discountType,
+      discountValue: form.discountValue ? parseFloat(form.discountValue) : 0,
+      price: parseFloat(form.price),
+      uom: form.uom,
+      size: form.size,
+      quantity: parseInt(form.quantity, 10),
+      description: form.description,
+      origin: form.origin,
+      manufacturer: form.manufacturer,
+      deliveryTypes: form.deliveryTypes,
+      image: form.image,
+    };
+
+    const categoryIndex = productData.findIndex(
+      (cat) => cat.category === form.category
+    );
+
+    if (categoryIndex >= 0) {
+      productData[categoryIndex].products.push(newProduct);
+    } else {
+      productData.push({
+        category: form.category,
+        products: [newProduct],
+      });
+    }
+
+    sessionStorage.setItem("productData", JSON.stringify(productData));
+    console.log("Saved to sessionStorage:", productData); // Debug log
+
+    alert("Product added successfully!");
+
+    setForm({
+      category: "",
+      productName: "",
+      mrp: "",
+      discountType: "",
+      discountValue: "",
+      price: "",
+      uom: "",
+      size: "",
+      quantity: "",
+      description: "",
+      origin: "",
+      manufacturer: "",
+      deliveryTypes: [],
+      image: null,
+    });
+
+    navigate("/Product");
   };
 
   return (
@@ -54,22 +130,16 @@ const Addproductdetails = () => {
     >
       <h2 className="text-xl font-semibold">Add a product</h2>
 
-      {/* Product Details */}
       <div className="space-y-2 border border-gray-400 p-6 rounded-md">
-        <h3 className="font-medium text-[18px] pb-3 leading-[100%] tracking-[0px] font-inter">
-          Product Details
-        </h3>
-        <div className="grid grid-cols-1 pb-3 md:grid-cols-2 gap-4  p-4 rounded-md">
+        <h3 className="font-medium text-[18px] pb-3">Product Details</h3>
+        <div className="grid grid-cols-1 pb-3 md:grid-cols-2 gap-4 p-4">
           <select
             name="category"
             value={form.category}
             onChange={handleChange}
             className="border border-gray-400 rounded px-3 py-2 text-sm"
           >
-            <option style={{ color: "#BEBEBE" }} value="">
-              Select related Category
-            </option>
-
+            <option value="">Select related Category</option>
             <option value="category1">Category 1</option>
             <option value="category2">Category 2</option>
           </select>
@@ -80,7 +150,7 @@ const Addproductdetails = () => {
             onChange={handleChange}
             type="text"
             placeholder="Product Name"
-            className="border border-gray-400  rounded px-3 py-2 text-sm"
+            className="border border-gray-400 rounded px-3 py-2 text-sm"
           />
 
           <input
@@ -139,7 +209,7 @@ const Addproductdetails = () => {
             value={form.size}
             onChange={handleChange}
             type="text"
-            placeholder="Product Size (Enter the size of each Product)"
+            placeholder="Product Size"
             className="border border-gray-400 rounded px-3 py-2 text-sm"
           />
 
@@ -154,7 +224,6 @@ const Addproductdetails = () => {
         </div>
       </div>
 
-      {/* Product Information */}
       <div className="space-y-2">
         <div className="border border-gray-400 p-4 rounded-md space-y-4">
           <h3 className="text-xl font-semibold">Product Information</h3>
@@ -184,18 +253,14 @@ const Addproductdetails = () => {
         </div>
       </div>
 
-      {/* Delivery & Product Image */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Delivery Details */}
         <div className="border border-[#E0E0E0] p-6 rounded-md">
           <h3 className="text-base font-semibold mb-4">Delivery Details</h3>
-
           <div className="border border-[#E0E0E0] rounded-md p-4">
             <p className="text-sm font-medium mb-1">Delivery Type</p>
             <p className="text-xs text-[#BEBEBE] mb-4">
-              (You can select multiple option)
+              (You can select multiple options)
             </p>
-
             <div className="space-y-3">
               {["Instant delivery", "Schedule delivery", "Store Pickup"].map(
                 (option) => (
@@ -217,7 +282,6 @@ const Addproductdetails = () => {
           </div>
         </div>
 
-        {/* Product Image */}
         <div className="border border-[#E0E0E0] p-6 rounded-md">
           <h3 className="text-base font-semibold mb-1">Product Image</h3>
           <p className="text-sm text-[#8B8B8B] mb-4">
@@ -226,22 +290,39 @@ const Addproductdetails = () => {
             <span>the Rewardify server</span>
           </p>
 
-          <div className="w-28 h-28 border-2 border-dashed border-[#D0D0D0] rounded-lg flex items-center justify-center text-gray-400 mx-auto">
-            <span className="text-2xl">🖼️</span>
-          </div>
+          <label
+            htmlFor="upload-image"
+            className="w-28 h-28 border-2 border-dashed border-[#D0D0D0] rounded-lg flex items-center justify-center text-gray-400 mx-auto cursor-pointer"
+          >
+            {form.image ? (
+              <img
+                src={form.image}
+                alt="Product Preview"
+                className="w-full h-full object-cover rounded-lg"
+              />
+            ) : (
+              <span className="text-2xl">🖼️</span>
+            )}
+            <input
+              id="upload-image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+            />
+          </label>
         </div>
       </div>
 
-      {/* Submit Button */}
       <div className="flex justify-center">
         <button
           type="submit"
-          disabled={!isFormValid()}
           className={`w-[180px] py-2 rounded text-sm text-center ${
             isFormValid()
               ? "bg-blue-600 text-white hover:bg-blue-700"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
+          disabled={!isFormValid()}
         >
           Save Changes
         </button>
