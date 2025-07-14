@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import gpay from "../../../src/assets/GooglePay.png";
-import Phonepay from "../../../src/assets/Phonepay.png";
+import Phonepay from "../../../src/assets/phonepay.png"
 import Paytm from "../../../src/assets/paytm.png";
 
 const MyWallet = () => {
