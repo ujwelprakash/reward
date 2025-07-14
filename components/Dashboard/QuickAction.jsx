@@ -11,7 +11,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import ActionCard from './Actioncard'
+import ActionCard from "./ActionCard"
 
 const QuickActions = () => {
   const [activePage, setActivePage] = useState(0);
