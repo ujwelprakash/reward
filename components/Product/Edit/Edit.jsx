@@ -1,45 +1,184 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import doveimg from "../../../src/assets/doveimg.png"
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import doveimg from "../../../src/assets/doveimg.png";
 
 const Edit = () => {
-  const initialData = {
-    category: "Pharmacy",
-    productName: "Dove Face Wash",
-    productMRP: "600",
-    discountType: "Flat",
-    discountValue: "10",
-    productPrice: "540",
-    uom: "ml",
-    unitSize: "250",
-    availableQty: "200",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Viverra odio gravida praesent bibendum urna diam. Vestibulum feugiat id varius egestas malesuada tempor lobortis donec vitae eleifend sit adipiscing mattis non duis. Nunc id volutpat sapien ut massa lorem volutpat sapien ut massa lorem volutpat sapien ut massa.",
-    country: "India",
-    manufacturer: "DOVE PVT LTD",
-    delivery: {
-      instant: true,
-      schedule: false,
-      pickup: false,
-    },
-  };
-
-  const [formData, setFormData] = useState(initialData);
-  const [isChanged, setIsChanged] = useState(false);
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const passedProduct = state?.product;
+  const passedCategory = state?.category;
+
+  const [formData, setFormData] = useState(null);
+  const [isChanged, setIsChanged] = useState(false);
+
+  useEffect(() => {
+    console.log("useEffect triggered with passedProduct and passedCategory:", {
+      passedProduct,
+      passedCategory,
+    });
+    if (passedProduct) {
+      setFormData({
+        category: passedCategory || "Unknown",
+        productName: passedProduct.name,
+        productMRP: passedProduct.price.toString(),
+        discountType: "Flat",
+        discountValue: "0",
+        productPrice: passedProduct.price.toString(),
+        uom: "ml",
+        unitSize: "250",
+        availableQty: passedProduct.quantity.toString(),
+        description:
+          "Lorem ipsum dolor sit amet consectetur. Viverra odio gravida praesent bibendum urna diam...",
+        country: "India",
+        manufacturer: "DOVE PVT LTD",
+        delivery: {
+          instant: true,
+          schedule: false,
+          pickup: false,
+        },
+      });
+      console.log("Form data initialized:", {
+        category: passedCategory || "Unknown",
+        productName: passedProduct.name,
+        productMRP: passedProduct.price.toString(),
+      });
+    }
+  }, [passedProduct, passedCategory]);
+
+  const calculateDiscountedPrice = (mrp, discountValue, discountType) => {
+    const price = parseFloat(mrp);
+    const discount = parseFloat(discountValue);
+
+    if (isNaN(price) || isNaN(discount)) return price || 0;
+
+    if (discountType === "Flat") {
+      return Math.max(0, price - discount);
+    } else if (discountType === "Percent") {
+      return Math.max(0, price - (price * discount) / 100);
+    }
+
+    return price;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    const numericFields = ["productMRP", "discountValue", "availableQty"];
+    if (numericFields.includes(name)) {
+      if (value !== "" && !/^\d*\.?\d*$/.test(value)) {
+        console.log(`Invalid input for ${name}:`, value);
+        return; // ignore invalid numeric input
+      }
+    }
+
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: value,
+      };
+
+      if (
+        name === "productMRP" ||
+        name === "discountValue" ||
+        name === "discountType"
+      ) {
+        updated.productPrice = calculateDiscountedPrice(
+          name === "productMRP" ? value : prev.productMRP,
+          name === "discountValue" ? value : prev.discountValue,
+          name === "discountType" ? value : prev.discountType
+        ).toFixed(2);
+        console.log(
+          `Recalculated productPrice due to ${name} change:`,
+          updated.productPrice
+        );
+      }
+
+      console.log("Form data updated:", updated);
+      return updated;
+    });
+
     setIsChanged(true);
+    console.log("isChanged set to true");
   };
+
+  const validateFormData = () => {
+    if (!formData) return false;
+    const mrp = parseFloat(formData.productMRP);
+    const qty = parseInt(formData.availableQty, 10);
+    const discount = parseFloat(formData.discountValue);
+
+    const isValid =
+      !isNaN(mrp) &&
+      mrp >= 0 &&
+      !isNaN(qty) &&
+      qty >= 0 &&
+      !isNaN(discount) &&
+      discount >= 0;
+
+    console.log("Form validation result:", isValid);
+    return isValid;
+  };
+
+  const handleUpdate = () => {
+    console.log("handleUpdate called with formData:", formData);
+    if (!validateFormData()) {
+      alert(
+        "Please enter valid numeric values for MRP, quantity, and discount."
+      );
+      return;
+    }
+
+    let storedData = JSON.parse(sessionStorage.getItem("productData"));
+    console.log("Loaded productData from sessionStorage:", storedData);
+
+    if (!storedData || storedData.length === 0) {
+      alert("No product data found in storage to update!");
+      return;
+    }
+
+    const updatedData = storedData.map((category) => {
+      if (category.category !== formData.category) return category;
+
+      return {
+        ...category,
+        products: category.products.map((product) => {
+          if (product.name === passedProduct.name) {
+            return {
+              ...product,
+              price: parseFloat(formData.productPrice),
+              quantity: parseInt(formData.availableQty, 10),
+            };
+          }
+          return product;
+        }),
+      };
+    });
+
+    console.log("Saved updatedData in sessionStorage:", updatedData);
+    sessionStorage.setItem("productData", JSON.stringify(updatedData));
+
+    alert("Product updated successfully!");
+    navigate("/Product", { state: { refresh: true } });
+  };
+  
+  if (!formData) {
+    console.log("No formData available, rendering fallback.");
+    return (
+      <div className="p-6 text-center">
+        <p className="text-red-500">No product data found. Please go back.</p>
+        <button
+          onClick={() => navigate("/Product")}
+          className="mt-4 underline text-blue-600"
+        >
+          Back to Product Listing
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6 text-sm">
-      <button
-        onClick={() => navigate("/Product")}
-        className="text-lg text-black"
-      >
+      <button onClick={() => navigate("/Product")} className="text-lg text-black">
         &larr; Back
       </button>
       <h2 className="text-2xl font-semibold">Edit Price</h2>
@@ -48,9 +187,8 @@ const Edit = () => {
       <div className="border border-gray-400 rounded-md p-4 space-y-4">
         <h3 className="text-lg font-medium">Product Details</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Category */}
           <div>
-            <label className=" text-xs block mb-1">Category</label>
+            <label className="text-xs block mb-1">Category</label>
             <input
               disabled
               value={formData.category}
@@ -58,9 +196,8 @@ const Edit = () => {
             />
           </div>
 
-          {/* Product Name */}
           <div>
-            <label className=" text-xs block mb-1">Product Name</label>
+            <label className="text-xs block mb-1">Product Name</label>
             <input
               disabled
               value={formData.productName}
@@ -68,20 +205,20 @@ const Edit = () => {
             />
           </div>
 
-          {/* Product MRP */}
           <div>
-            <label className=" text-xs block mb-1">Product MRP</label>
+            <label className="text-xs block mb-1">Product MRP</label>
             <input
               name="productMRP"
               value={formData.productMRP}
               onChange={handleChange}
               className="border border-gray-400 p-2 rounded w-full"
+              inputMode="decimal"
+              pattern="[0-9]*"
             />
           </div>
 
-          {/* Discount */}
           <div>
-            <label className=" text-xs block mb-1">Special Discount</label>
+            <label className="text-xs block mb-1">Special Discount</label>
             <div className="flex gap-2">
               <select
                 name="discountType"
@@ -97,24 +234,24 @@ const Edit = () => {
                 value={formData.discountValue}
                 onChange={handleChange}
                 className="border border-gray-400 p-2 rounded w-1/2"
+                inputMode="decimal"
+                pattern="[0-9]*"
               />
             </div>
           </div>
 
-          {/* Product Price */}
           <div>
-            <label className=" text-xs block mb-1">Product Price</label>
+            <label className="text-xs block mb-1">Product Price</label>
             <input
               name="productPrice"
               value={formData.productPrice}
-              onChange={handleChange}
-              className="border border-gray-400 p-2 rounded w-full"
+              readOnly
+              className="border border-gray-400 p-2 rounded w-full bg-gray-100"
             />
           </div>
 
-          {/* UOM */}
           <div>
-            <label className=" text-xs block mb-1">UOM</label>
+            <label className="text-xs block mb-1">UOM</label>
             <input
               disabled
               value={formData.uom}
@@ -122,9 +259,8 @@ const Edit = () => {
             />
           </div>
 
-          {/* Unit Size */}
           <div>
-            <label className=" text-xs block mb-1">Unit Size</label>
+            <label className="text-xs block mb-1">Unit Size</label>
             <input
               disabled
               value={formData.unitSize}
@@ -132,13 +268,15 @@ const Edit = () => {
             />
           </div>
 
-          {/* Available Quantity */}
           <div>
-            <label className=" text-xs block mb-1">Available Quantity</label>
+            <label className="text-xs block mb-1">Available Quantity</label>
             <input
-              disabled
+              name="availableQty"
               value={formData.availableQty}
-              className="border border-gray-400 p-2 rounded w-full bg-gray-100"
+              onChange={handleChange}
+              className="border border-gray-400 p-2 rounded w-full"
+              inputMode="numeric"
+              pattern="[0-9]*"
             />
           </div>
         </div>
@@ -147,34 +285,29 @@ const Edit = () => {
       {/* Product Information */}
       <div className="border border-gray-400 rounded-md p-4 space-y-4">
         <h3 className="text-lg font-medium">Product Information</h3>
-        <label className=" text-xs block mb-1">Description</label>
+        <label className="text-xs block mb-1">Description</label>
         <textarea
           disabled
           value={formData.description}
-          className="border border-gray-400 p-2 pb-5 rounded w-full bg-gray-100 overflow-auto resize-none"
+          className="border border-gray-400 p-2 rounded w-full bg-gray-100 resize-none"
           rows="4"
-          placeholder="Lorem ipsum dolor sit amet consectetur. Viverra duis gravida praesent bibendum urna diam velit. Interdum feugiat id montes lectus ultrices neque ipsum felis. Donec diam eleifend sit adipiscing rhoncus elit lacus. Erat ut orci quisque at massa ipsum facilisis.
-Pharetra sollicitudin sollicitudin semper donec natoque commodo eu ultricies. At sit netus mattis pharetra urna sit. Urna turpis suspendisse pellentesque nisi at non sollicitudin suspendisse quam. Amet facilisis enim nibh convallis. Egestas enim est ut magna elementum facilisis.
-Tellus felis ultrices pellentesque cras nec ipsum duis velit ac. Donec tortor in id lectus non nunc dui. Ullamcorper mattis."
         />
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className=" text-xs block mb-1">Country of Origin</label>
+            <label className="text-xs block mb-1">Country of Origin</label>
             <input
               disabled
               value={formData.country}
-              className="border border-gray-400 p-2 rounded bg-gray-100 w-full"
-              placeholder="Country of Origin"
+              className="border border-gray-400 p-2 rounded w-full bg-gray-100"
             />
           </div>
           <div>
-            <label className=" text-xs block mb-1">Manufacturer</label>
+            <label className="text-xs block mb-1">Manufacturer</label>
             <input
               disabled
               value={formData.manufacturer}
-              className="border border-gray-400 p-2 rounded bg-gray-100 w-full"
-              placeholder="Manufacturer"
+              className="border border-gray-400 p-2 rounded w-full bg-gray-100"
             />
           </div>
         </div>
@@ -182,12 +315,8 @@ Tellus felis ultrices pellentesque cras nec ipsum duis velit ac. Donec tortor in
 
       {/* Delivery & Product Image */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Delivery */}
         <div className="border border-gray-400 rounded-md p-4">
           <h3 className="text-lg font-medium">Delivery Details</h3>
-          <p className="text-xs text-gray-500 mb-2">
-            Delivery Type (Read-only)
-          </p>
           {["instant", "schedule", "pickup"].map((key) => (
             <label key={key} className="flex items-center gap-2 mb-1">
               <input
@@ -201,17 +330,16 @@ Tellus felis ultrices pellentesque cras nec ipsum duis velit ac. Donec tortor in
           ))}
         </div>
 
-        {/* Product Image */}
         <div className="border border-gray-400 rounded-md p-4 flex flex-col items-center justify-center">
           <h3 className="text-lg font-medium mb-2">Product Image</h3>
-          <p className="text-xs mt-2 text-left text-gray-500">
-            Product images will be fetched from <br/>the Rewardify server
+          <p className="text-xs text-gray-500 mb-2 text-center">
+            Product image is fetched from server
           </p>
-          <div className="w-32 h-32   rounded-md flex items-center justify-center">
+          <div className="w-32 h-32">
             <img
-              src={doveimg} // Replace with actual path in your project
-              alt="Dove"
-              className="object-contain"
+              src={doveimg}
+              alt="Product"
+              className="object-contain w-full h-full"
             />
           </div>
         </div>
@@ -221,6 +349,7 @@ Tellus felis ultrices pellentesque cras nec ipsum duis velit ac. Donec tortor in
       <div className="text-center">
         <button
           disabled={!isChanged}
+          onClick={handleUpdate}
           className={`w-[180px] mt-4 py-2 rounded text-sm font-medium transition-colors duration-200 ${
             isChanged
               ? "bg-blue-600 text-white hover:bg-blue-700"

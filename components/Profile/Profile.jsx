@@ -1,12 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../../src/contexts/AppContext";// Make sure this path is correct
 import Header from "../Layout/Header";
 import Navbar from "../Layout/Navbar";
 import ProfileLayout from "./ProfileLayout/ProfileLayout";
-import logout from "../../src/assets/logout.png";
+import logout from "../../src/assets/logout.png"; // Adjust if needed
 
 const Profile = () => {
   const [showLogoutCard, setShowLogoutCard] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+  const navigate = useNavigate();
+  const { setIsAuthenticated } = useAppContext();
 
   const handleLogoutClick = () => {
     setShowLogoutCard(true);
@@ -17,9 +22,14 @@ const Profile = () => {
   };
 
   const handleConfirmLogout = () => {
-    // Add actual logout logic here
-    console.log("Logging out...");
+    // ✅ Clear auth context
+    setIsAuthenticated(false);
+    // ✅ Optional: Clear storage if you persist login
+    localStorage.removeItem("auth");
+    // ✅ Hide logout modal
     setShowLogoutCard(false);
+    // ✅ Navigate to login
+    navigate("/");
   };
 
   return (

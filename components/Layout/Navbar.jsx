@@ -107,7 +107,7 @@ const Navbar = () => {
 
             <li>
               <NavLink
-                to="/"
+                to="/profile"
                 className={({ isActive }) =>
                   `flex items-center px-6 py-3 gap-2 hover:bg-gray-50 ${
                     isActive

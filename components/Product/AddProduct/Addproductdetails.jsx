@@ -140,8 +140,8 @@ const Addproductdetails = () => {
             className="border border-gray-400 rounded px-3 py-2 text-sm"
           >
             <option value="">Select related Category</option>
-            <option value="category1">Category 1</option>
-            <option value="category2">Category 2</option>
+            <option value="Pharmacy">Pharmacy</option>
+            <option value="Cakes">Cakes</option>
           </select>
 
           <input
